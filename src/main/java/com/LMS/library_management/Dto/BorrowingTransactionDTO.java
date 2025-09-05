@@ -9,8 +9,6 @@ import java.time.LocalDate;
 
 @Data
 public class BorrowingTransactionDTO {
-    private Long id;
-
     @NotNull(message = "Book ID is required")
     private Long bookId;
 

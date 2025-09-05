@@ -1,6 +1,6 @@
 // service/BorrowerService.java
 package com.LMS.library_management.Service;
-
+import org.modelmapper.ModelMapper;
 import com.LMS.library_management.Dto.BorrowerDTO;
 import com.LMS.library_management.Models.Borrower;
 import com.LMS.library_management.Exception.ResourceNotFoundException;
@@ -13,18 +13,17 @@ import java.util.List;
 
 @Service
 public class BorrowerService {
+    private final ModelMapper modelMapper;
     private final BorrowerRepository borrowerRepository;
     private static final Logger logger = LoggerFactory.getLogger(BorrowerService.class);
 
-    public BorrowerService(BorrowerRepository borrowerRepository) {
+    public BorrowerService(ModelMapper modelMapper, BorrowerRepository borrowerRepository) {
+        this.modelMapper = modelMapper;
         this.borrowerRepository = borrowerRepository;
     }
 
     public Borrower createBorrower(BorrowerDTO dto) {
-        Borrower borrower = new Borrower();
-        borrower.setEmail(dto.getEmail());
-        borrower.setName(dto.getName());
-        borrower.setPhoneNumber(dto.getPhoneNumber());
+        Borrower borrower = modelMapper.map(dto,Borrower.class);
         Borrower saved = borrowerRepository.save(borrower);
         logger.info("Created borrower with id {}", saved.getId());
         return saved;

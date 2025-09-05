@@ -1,5 +1,5 @@
 package com.LMS.library_management.Service;
-
+import org.modelmapper.ModelMapper;
 import com.LMS.library_management.Dto.BorrowingTransactionDTO;
 import com.LMS.library_management.Models.Book;
 import com.LMS.library_management.Models.Borrower;
@@ -20,14 +20,16 @@ import java.util.List;
 @Service
 public class BorrowingTransactionService {
 
+    private final ModelMapper modelMapper;
     private final BorrowingTransactionRepository transactionRepository;
     private final BookRepository bookRepository;
     private final BorrowerRepository borrowerRepository;
     private static final Logger logger = LoggerFactory.getLogger(BorrowingTransactionService.class);
 
-    public BorrowingTransactionService(BorrowingTransactionRepository transactionRepository,
+    public BorrowingTransactionService(ModelMapper modelMapper, BorrowingTransactionRepository transactionRepository,
                                        BookRepository bookRepository,
                                        BorrowerRepository borrowerRepository) {
+        this.modelMapper = modelMapper;
         this.transactionRepository = transactionRepository;
         this.bookRepository = bookRepository;
         this.borrowerRepository = borrowerRepository;
@@ -44,10 +46,7 @@ public class BorrowingTransactionService {
         Borrower borrower = borrowerRepository.findById(dto.getBorrowerId())
                 .orElseThrow(() -> new ResourceNotFoundException("Borrower not found with id " + dto.getBorrowerId()));
 
-        BorrowingTransaction transaction = new BorrowingTransaction();
-        transaction.setBook(book);
-        transaction.setBorrower(borrower);
-        transaction.setBorrowDate(LocalDate.now());
+        BorrowingTransaction transaction = modelMapper.map(dto,BorrowingTransaction.class);
         transaction.setStatus(BorrowingStatus.BORROWED);
 
         // Mark book as unavailable

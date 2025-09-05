@@ -6,7 +6,6 @@ import lombok.Data;
 
 @Data
 public class BorrowerDTO {
-    private Long id;
 
     @NotBlank(message = "Name is required")
     private String name;

@@ -1,6 +1,6 @@
 // service/BookService.java
 package com.LMS.library_management.Service;
-
+import org.modelmapper.ModelMapper;
 import com.LMS.library_management.Dto.BookDTO;
 import com.LMS.library_management.Models.Author;
 import com.LMS.library_management.Models.Book;
@@ -18,11 +18,13 @@ import java.util.List;
 
 @Service
 public class BookService {
+    private final ModelMapper modelMapper;
     private final BookRepository bookRepository;
     private final AuthorRepository authorRepository;
     private static final Logger logger = LoggerFactory.getLogger(BookService.class);
 
-    public BookService(BookRepository bookRepository, AuthorRepository authorRepository) {
+    public BookService(ModelMapper modelMapper, BookRepository bookRepository, AuthorRepository authorRepository) {
+        this.modelMapper = modelMapper;
         this.bookRepository = bookRepository;
         this.authorRepository = authorRepository;
     }
@@ -34,12 +36,7 @@ public class BookService {
                 .anyMatch(b -> b.getIsbn().equals(dto.getIsbn()))) {
             throw new BadRequestException("Book with the same ISBN already exists");
         }
-        Book book = new Book();
-        book.setAvailable(dto.isAvailable());
-        book.setIsbn(dto.getIsbn());
-        book.setTitle(dto.getTitle());
-        book.setAuthor(author);
-        book.setCategory(dto.getCategory());
+        Book book = modelMapper.map(dto,Book.class);
         Book saved = bookRepository.save(book);
         logger.info("Created book with id {}", saved.getId());
         return saved;
